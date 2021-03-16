@@ -8,4 +8,5 @@
  */
 
 rootProject.name = 'winepairer'
-include('app', 'api', 'domain')
+include 'api'
+include 'domain'
