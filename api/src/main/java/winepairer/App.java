@@ -3,7 +3,7 @@ package winepairer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 public class App {
     public static void main(String[] args) throws Exception {
