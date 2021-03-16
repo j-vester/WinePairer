@@ -4,9 +4,9 @@ public class WinePairer {
     private String wine;
     private String meal;
 
-    public WinePairer() {
+    public WinePairer(String mealToPairWith) {
         this.wine = "Chardonnay";
-        this.meal = "Zalm";
+        this.meal = mealToPairWith;
     }
 
     public String getWine() {
