@@ -15,7 +15,7 @@ public class ObtainWinepairing {
     public Response initialize(
             @Context HttpServletRequest request,
             MealInput mealInput) {
-        String meal = mealInput.getMeal();
+        String meal = mealInput.getMealToPair();
         var winepairing = new WinePairer(meal);
 
         var output = new WinePairing(winepairing);

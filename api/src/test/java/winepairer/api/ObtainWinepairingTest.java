@@ -42,7 +42,7 @@ public class ObtainWinepairingTest {
 
     private MealInput mealInput(String meal) {
         var input = new MealInput();
-        input.setMeal(meal);
+        input.setMealToPair(meal);
         return input;
     }
 }

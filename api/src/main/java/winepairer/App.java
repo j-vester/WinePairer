@@ -5,6 +5,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+
 public class App {
     public static void main(String[] args) throws Exception {
         Server server = startServer(8080);
@@ -31,9 +32,9 @@ public class App {
 
     private static void registerServlets(ServletContextHandler context) {
         // Use the Jersey framework to translate the classes in the
-        // mancala.api package to server endpoints (servlets).
-        // For example, the StartMancala class will become an endpoint at
-        // http://localost:8080/mancala/api/start
+        // winepairer.api package to server endpoints (servlets).
+        // For example, the ObtainWinepairing class will become an endpoint at
+        // http://localost:8080/winepairer/api/pairwine
         ServletHolder serverHolder = context.addServlet(ServletContainer.class, "/winepairer/api/*");
         serverHolder.setInitOrder(1);
         serverHolder.setInitParameter("jersey.config.server.provider.packages", 

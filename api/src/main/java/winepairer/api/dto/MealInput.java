@@ -1,13 +1,13 @@
 package winepairer.api.dto;
 
 public class MealInput {
-    String meal;
+    String mealToPair;
 
-    public String getMeal() {
-        return meal;
+    public String getMealToPair() {
+        return mealToPair;
     }
 
-    public void setMeal(String meal) {
-        this.meal = meal;
+    public void setMealToPair(String mealToPair) {
+        this.mealToPair = mealToPair;
     }
 }
