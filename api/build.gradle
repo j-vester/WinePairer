@@ -45,7 +45,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'jvester_wine_pairer.App'
+    mainClass = 'winepairer.App'
 }
 
 tasks.named('test') {
