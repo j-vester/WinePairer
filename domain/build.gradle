@@ -7,9 +7,17 @@ plugins {
 repositories {
     // Specify the repository mirror that we want to download our dependencies from. JCentral is configured by default when creating a new Gradle project.
     jcenter()
+    maven {
+        url 'https://github.com/psiegman/mvn-repo/raw/master/releases'
+    }
 }
 
 dependencies {
+    implementation('nl.siegmann.epublib:epublib-core:3.1') {
+        exclude group: 'org.slf4j'
+        exclude group: 'xmlpull'
+        exclude group: 'net.sf.kxml'
+    }
     // Download JUnit so that we can use it in our tests.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'

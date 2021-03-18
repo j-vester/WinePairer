@@ -8,6 +8,9 @@ plugins {
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
+    maven {
+        url 'https://github.com/psiegman/mvn-repo/raw/master/releases'
+    }
 }
 
 dependencies {
@@ -41,6 +44,12 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:29.0-jre'
+
+    implementation('nl.siegmann.epublib:epublib-core:3.1') {
+        exclude group: 'org.slf4j'
+        exclude group: 'xmlpull'
+        exclude group: 'net.sf.kxml'
+    }
 }
 
 application {
