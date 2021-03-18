@@ -5,8 +5,15 @@ public class WinePairer {
     private String meal;
 
     public WinePairer(String mealToPairWith) {
-        this.wine = "Chardonnay";
+        this.wine = getPairing(mealToPairWith);
         this.meal = mealToPairWith;
+    }
+
+    private String getPairing(String meal) {
+        String pairing;
+        if (meal.equals("Zalm")) pairing = "Chardonnay";
+        else pairing = "Onbekend";
+        return pairing;
     }
 
     public String getWine() {
