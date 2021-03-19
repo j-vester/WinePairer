@@ -46,11 +46,7 @@ dependencies {
     implementation 'com.google.guava:guava:29.0-jre'
     
     // This dependency is used by the library built in the domain layer
-    implementation('nl.siegmann.epublib:epublib-core:3.1') {
-        exclude group: 'org.slf4j'
-        exclude group: 'xmlpull'
-        exclude group: 'net.sf.kxml'
-    }
+    implementation 'nl.siegmann.epublib:epublib-core:3.1'
 }
 
 application {

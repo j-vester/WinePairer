@@ -13,11 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation('nl.siegmann.epublib:epublib-core:3.1') {
-        exclude group: 'org.slf4j'
-        exclude group: 'xmlpull'
-        exclude group: 'net.sf.kxml'
-    }
+    implementation 'nl.siegmann.epublib:epublib-core:3.1'
     // Download JUnit so that we can use it in our tests.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
