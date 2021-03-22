@@ -11,5 +11,5 @@ export function Main() {
         return <PairWine setWinePairing={setWinePairing} />
     }
 
-    return (<div>To do...</div>)
+    return (<div>Bij {winePairing.meal} past {winePairing.wine}.</div>)
 }
