@@ -4,19 +4,20 @@ import java.util.*;
 public class Wine {
     private WineColour colour;
     private String name;
+    private boolean hasDescription = false;
     private String description;
-    private List<Wine> referrals;
-    private List<WineFood> pairings = new ArrayList<WineFood>();
-    private Recipe recipe;
+    private List<Wine> referrals = new ArrayList<>();
+    private List<WineFood> pairings = new ArrayList<>();
+    private List<Recipe> recipes = new ArrayList<>();
 
     public Wine(WineColour colour, String name) {
         this.colour = colour;
         this.name = name;
     }
 
-    public Wine(WineColour colour, String name, String description) {
-        this(colour, name);
+    public void addDescription(String description) {
         this.description = description;
+        this.hasDescription = true;
     }
 
     public void addPairing(WineFood pairing) {
@@ -27,8 +28,8 @@ public class Wine {
         this.referrals.add(wine);
     }
     
-    public void addRecipe(Recipe recipe) {
-        this.recipe = recipe;
+    public void addRecipes(List<Recipe> recipes) {
+        this.recipes.addAll(recipes);
     }
 
     public WineColour getColour() {
@@ -39,12 +40,16 @@ public class Wine {
         return this.name;
     }
 
+    public boolean hasDescription() {
+        return hasDescription;
+    }
+
     public String getDescription() {
         return this.description;
     }
 
-    public Recipe getRecipe() {
-        return recipe;
+    public List<Recipe> getRecipes() {
+        return recipes;
     }
 
     public List<WineFood> getPairings() {

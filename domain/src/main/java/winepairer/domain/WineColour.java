@@ -1,5 +1,15 @@
 package winepairer.domain;
 
 public enum WineColour {
-    White, Red, Rose, undefined;
+    White("wit"), Red("rood"), Rose("rosé"), undefined("onbekend");
+
+    private String colourDutch;
+
+    private WineColour(String colourDutch) {
+        this.colourDutch = colourDutch;
+    }
+
+    public String getDutchName() {
+        return this.colourDutch;
+    }
 }

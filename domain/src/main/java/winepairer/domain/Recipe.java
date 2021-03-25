@@ -4,13 +4,26 @@ import java.util.*;
 
 public class Recipe {
     String name;
-    List<String> ingredients = new ArrayList<String>();
-    String instructions;
+    String size;
+    List<String> ingredients;
+    List<String> instructions;
 
-    public Recipe(String name, ArrayList<String> ingredients, String instructions) {
+    public Recipe(String name, String size, List<String> ingredients, List<String> instructions) {
         this.name = name;
+        this.size = size;
         this.ingredients = ingredients;
         this.instructions = instructions;
     }
     
+    public String getName() {
+        return this.name;
+    }
+
+    public List<String> getIngredients() {
+        return this.ingredients;
+    }
+
+    public List<String> getInstructions() {
+        return this.instructions;
+    }
 }
