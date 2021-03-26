@@ -10,16 +10,16 @@ import java.io.IOException;
 
 import java.util.*;
 
+import javax.swing.text.html.HTML;
+
 public class WineDineReader {
     private static final String EPUB_LOC = "./domain/Victoria_Moore.epub";
     // Identifiers for specific information in the text.
     private static final String INGREDIENTCHAPTER_ID = "<span class=\"Schreefloos_slt-vetwijnm\"";
-    private static final String WHITEWINE_ID = "<span class=\"fft-romeinwit\"";
-    private static final String REDWINE_ID = "<span class=\"fft-romeinrood\"";
-    private static final String ROSEWINE_ID = "<span class=\"fft-romeinrose\"";
+    private static final String WINE_ID = "<span class=\"fft-romein";
     private static final String INGREDIENT_ID = "<span class=\"Schreefloos_slt-vet\"";
     private static final String SUBINGREDIENT_ID = "<p class=\"ff-tussenkop\"><span class=\"fft-vet\"";
-    private static final String SPECIFICATION_ID = "<p class=\"ff-platmetwit\"><span class=\"Schreefloos_slt-romein";
+    private static final String SPECIFICATION_ID = "<p class=\"ff-platmetwit\"><span class=\"Schreefloos_slt-romein\">";
     private static final String REFERENCE_ID = "<p class=\"ff-kaderalinea\"><span class=\"Schreefloos_slt-romein\"";
     private static final String GAMECHANGER_ID = "<span class=\"Schreefloos_slt-kkromeingamechanger\">GAMECHANGER</span";
     private static final String RECIPE_NAME_ID = "<p class=\"Kader_ff-kaderkop\"";
@@ -41,6 +41,17 @@ public class WineDineReader {
     private static final String WHITESPACE_END = ";";
     // Start and end of HTML tags
     private static final String[] HTML = {"<",">"};
+    // Strange span tags that litter the text
+    private static final String LITTER = " xml:lang=\"ar-SA\">";
+    private static final String REMOVE_REGEX_1 = "<span"+LITTER+"(.*)</span>";
+    private static final String REPLACE_REGEX_1 = "$1";
+    private static final String REMOVE_REGEX_2 = "</span>"+WINE_ID+"[a-z]{3,4}?\""+LITTER;
+    private static final String REPLACE_REGEX_2 = "";
+    private static final String REMOVE_REGEX_3 = WINE_ID+"([a-z]{3,4}?)\""+LITTER+"(.*)</span>"+WINE_ID+"\1\">";
+    private static final String REPLACE_REGEX_3 = WINE_ID+"$1\">$2";
+    private static final String REMOVE_REGEX_4 = "</span>"+WINE_ID+"[a-z]{3,4}?\">";
+    private static final String REPLACE_REGEX_4 = "";
+
 
     private Map<String,String> wineTexts = new HashMap<String,String>();
     private Map<String,Wine> wines = new HashMap<String,Wine>();
@@ -62,8 +73,25 @@ public class WineDineReader {
             System.out.println(e.getMessage());
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        }        
+    }
+
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        WineDineReader reader = new WineDineReader();
+        for (String wine:reader.getWines().keySet()) {
+            System.out.println(wine);
         }
-        
+        for (String food:reader.getFoods().keySet()) {
+            System.out.println(food);
+        }
+    }
+
+    public Map<String,Wine> getWines() {
+        return wines;
+    }
+
+    public Map<String,Food> getFoods() {
+        return foods;
     }
 
     private List<String> findChapters(List<Resource> contents, String identifier) throws IOException {
@@ -87,6 +115,10 @@ public class WineDineReader {
         par = removeAllParts(par, "</div>", "</html>");
         // remove html whitespaces
         par = removeAllParts(par, WHITESPACE_START, WHITESPACE_END);
+        par.replaceAll(REMOVE_REGEX_1, REPLACE_REGEX_1);
+        par.replaceAll(REMOVE_REGEX_2, REPLACE_REGEX_2);
+        par.replaceAll(REMOVE_REGEX_3, REPLACE_REGEX_3);
+        par.replaceAll(REMOVE_REGEX_4, REPLACE_REGEX_4);
         return par;
     }
 
@@ -127,7 +159,23 @@ public class WineDineReader {
 
     private void findAllFoodsWithWines(List<String> foodChapters) {
         for (String chapter:foodChapters) {
-
+            List<String> paragraphs = obtainAllParts(chapter, INGREDIENT_ID, INGREDIENT_ID);
+            for (String paragraph:paragraphs) {
+                String name = obtainAllParts(paragraph, INGREDIENT_ID, "</span>", HTML).get(0);
+                boolean gamechanger = paragraph.contains(GAMECHANGER_ID);
+                Food food = new Food(name, gamechanger);
+                List<Recipe> recipes = obtainAllRecipes(paragraph);
+                if (!recipes.isEmpty()) {
+                    food.addRecipes(recipes);
+                }
+                foods.put(name, food);
+                String[] specificFoods = paragraph.split(SPECIFICATION_ID);
+                findAllWinePairings(food, specificFoods[0]);
+                for (int i=1; i<specificFoods.length; i++) {
+                    String foodSpecs = specificFoods[i].substring(0, specificFoods[i].indexOf("</span>"));
+                    findAllWinePairings(food, specificFoods[i], foodSpecs);
+                }
+            }
         }
     }
 
@@ -159,6 +207,25 @@ public class WineDineReader {
             wine.addRecipes(recipes);
         }
         return wine;
+    }
+
+    private void findAllWinePairings(Food food, String par, String ... foodSpecs) {
+        List<String> winePairings = obtainAllParts(par, WINE_ID, "</span>", HTML);
+        for (String winePairing:winePairings) {
+            for (String wine:wines.keySet()) {
+                if (winePairing.toLowerCase().contains(wine)) {
+                    WineFood pairing = new WineFood(wines.get(wine), food);
+                    int startWine = winePairing.toLowerCase().indexOf(wine);
+                    if (startWine+wine.length() < winePairing.length()) {
+                        winePairing = winePairing.substring(0, startWine) + winePairing.substring(startWine+wine.length()+1);
+                    } else {
+                        winePairing = winePairing.substring(0, startWine);
+                    }
+                    if (winePairing.length() > 0) pairing.addWineSpecification(winePairing);
+                    if (foodSpecs.length > 0) pairing.addFoodSpecification(foodSpecs[0]);                
+                }
+            }
+        }
     }
 
     private List<Recipe> obtainAllRecipes(String str) {
