@@ -3,7 +3,9 @@ package winepairer.domain;
 public class WineFood {
     private Wine wine;
     private Food food;
+    private boolean hasWineSpecs = false;
     private String wineSpecification = " ";
+    private boolean hasFoodSpecs = false;
     private String foodSpecification = " ";
 
     public WineFood(Wine wine, Food food) {
@@ -15,10 +17,12 @@ public class WineFood {
 
     public void addWineSpecification(String specs) {
         this.wineSpecification += specs;
+        this.hasWineSpecs = true;
     }
 
     public void addFoodSpecification(String specs) {
         this.foodSpecification += specs;
+        this.hasFoodSpecs = true;
     }
 
     public Wine getWine() {
@@ -26,7 +30,11 @@ public class WineFood {
     }
 
     public String getWineName() {
-        return this.wine.getName()+this.wineSpecification;
+        if (this.hasWineSpecs) {
+            return this.wine.getName()+this.wineSpecification;
+        } else {
+            return this.wine.getName();
+        }
     }
 
     public Food getFood() {
@@ -34,6 +42,10 @@ public class WineFood {
     }
 
     public String getFoodName() {
-        return this.food.getName()+this.foodSpecification;
+        if (this.hasFoodSpecs) {
+            return this.food.getName()+this.foodSpecification;
+        } else {
+            return this.food.getName();
+        }
     }
 }
