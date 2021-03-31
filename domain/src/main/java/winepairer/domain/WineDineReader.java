@@ -1,7 +1,8 @@
 package winepairer.domain;
 
-import nl.siegmann.epublib.epub.*;
-import nl.siegmann.epublib.domain.*;
+import nl.siegmann.epublib.epub.EpubReader;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,18 +10,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
-import javax.swing.text.html.HTML;
 
 public class WineDineReader {
     private static final String EPUB_LOC = "./domain/Victoria_Moore.epub";
     // Identifiers for specific information in the text.
     private static final String INGREDIENTCHAPTER_ID = "<span class=\"Schreefloos_slt-vetwijnm\"";
     private static final String WINE_ID = "<span class=\"fft-romein";
-    private static final String INGREDIENT_ID = "<span class=\"Schreefloos_slt-vet\"";
-    private static final String SUBINGREDIENT_ID = "<p class=\"ff-tussenkop\"><span class=\"fft-vet\"";
+    private static final String INGREDIENT_ID = "<span class=\"Schreefloos_slt-vet\">";
+    //private static final String SUBINGREDIENT_ID = "<p class=\"ff-tussenkop\"><span class=\"fft-vet\"";
     private static final String SPECIFICATION_ID = "<p class=\"ff-platmetwit\"><span class=\"Schreefloos_slt-romein\">";
-    private static final String REFERENCE_ID = "<p class=\"ff-kaderalinea\"><span class=\"Schreefloos_slt-romein\"";
+    //private static final String REFERENCE_ID = "<p class=\"ff-kaderalinea\"><span class=\"Schreefloos_slt-romein\"";
     private static final String GAMECHANGER_ID = "<span class=\"Schreefloos_slt-kkromeingamechanger\">GAMECHANGER</span";
     private static final String RECIPE_NAME_ID = "<p class=\"Kader_ff-kaderkop\"";
     private static final String RECIPE_INGR_ID = "<p class=\"Kader_ff-kaderlijst\"";
@@ -29,16 +30,17 @@ public class WineDineReader {
     private static final String GRAPE_ID = "<p class=\"ff-hangend\">";
     private static final String GRAPE_DISCUSSED_ID = "<span class=\"fft-vet\"";
     private static final String WINECHAPTER_ID = "<span class=\"Schreefloos_slt-vetdarkred\"";
+    private static final String WINECHAPTER_REGEX = "<span class=\"Schreefloos_slt-vetdarkred\">([A-Z]{1}) ?</span>";
     private static final String WINEPARAGRAPH_ID = "<p class=\"ff-kopklein\">";
     private static final String WHITEWINEPARAGRAPH_ID = "<span class=\"Schreefloos_slt-vetwit\">";
     private static final String REDWINEPARAGRAPH_ID = "<span class=\"Schreefloos_slt-vetrood\">";
     private static final String ROSEWINEPARAGRAPH_ID = "<span class=\"Schreefloos_slt-vetrose\">";
+    private static final String UNDEFINEDWINEPARAGRAPH_ID = "<span class=\"Schreefloos_slt-vet\">";
     private static final String WINE_DESCRIPTION_ID = "<span class=\"fft-cursief\">hoe hij smaakt: </span>";
     private static final String REMOVE_PARAGRAPH_ID = "<p class=\"ff-blok";
-    private static final String DUTCH_INGREDIENTCHAPTER_ID = "producten en gerechten uit de Lage Landen";
-    // HTML codes for whitespace 
-    private static final String WHITESPACE_START = "&#";
-    private static final String WHITESPACE_END = ";";
+    //private static final String DUTCH_INGREDIENTCHAPTER_ID = "producten en gerechten uit de Lage Landen";
+    // HTML codes for whitespace
+    private static final String WHITESPACE_REGEX = "&#[0-9]{1,3};";
     // Start and end of HTML tags
     private static final String[] HTML = {"<",">"};
     // Strange span tags that litter the text
@@ -64,7 +66,7 @@ public class WineDineReader {
             Book wineDine = eReader.readEpub(new FileInputStream(eBook));
             List<Resource> contents = wineDine.getContents();
             // First find all wines discussed in the book
-            findAllDiscussedWines(findChapters(contents, WINECHAPTER_ID));
+            findAllDiscussedWines(findChapters(contents, WINECHAPTER_ID, WINECHAPTER_REGEX));
             // Then find the chapter with references to other wines for the wines that are not discussed in the book
             findAllReferencedWines(findChapters(contents, WINEOVERVIEW_ID));
             // Find all discussed foods and corresponding winepairings
@@ -94,31 +96,33 @@ public class WineDineReader {
         return foods;
     }
 
-    private List<String> findChapters(List<Resource> contents, String identifier) throws IOException {
+    private List<String> findChapters(List<Resource> contents, String identifier, String ... regex) throws IOException {
         List<String> chapters = new ArrayList<>();
         for (Resource content:contents) {
-            String readableContent = content.getData().toString();
-            if (readableContent.contains(identifier)) {
-                removeIrrelevantParts(readableContent);
+            String readableContent = new String(content.getData());
+            if ((regex.length > 0 && Pattern.compile(regex[0]).matcher(readableContent).find()) 
+                || (regex.length == 0 && readableContent.contains(identifier))) {
+                readableContent = removeIrrelevantParts(readableContent);
                 chapters.add(readableContent);
-            }
+            }    
         }
         return chapters;
     }
 
     private String removeIrrelevantParts(String par) {
+        // remove html whitespaces
+        par = par.replaceAll(WHITESPACE_REGEX,"");
+        // remove weird mistakes
+        par = par.replaceAll(REMOVE_REGEX_1, REPLACE_REGEX_1);
+        par = par.replaceAll(REMOVE_REGEX_2, REPLACE_REGEX_2);
+        par = par.replaceAll(REMOVE_REGEX_3, REPLACE_REGEX_3);
+        par = par.replaceAll(REMOVE_REGEX_4, REPLACE_REGEX_4);
         // remove start of html file
         par = removeAllParts(par, "<?xml", "<div class=\"ffo-newpage\">");
         // remove paragraphs of winemakers 
         par = removeAllParts(par, REMOVE_PARAGRAPH_ID, "</p>");
         // remove end of html file
         par = removeAllParts(par, "</div>", "</html>");
-        // remove html whitespaces
-        par = removeAllParts(par, WHITESPACE_START, WHITESPACE_END);
-        par.replaceAll(REMOVE_REGEX_1, REPLACE_REGEX_1);
-        par.replaceAll(REMOVE_REGEX_2, REPLACE_REGEX_2);
-        par.replaceAll(REMOVE_REGEX_3, REPLACE_REGEX_3);
-        par.replaceAll(REMOVE_REGEX_4, REPLACE_REGEX_4);
         return par;
     }
 
@@ -138,16 +142,28 @@ public class WineDineReader {
             List<String> grapes = obtainAllParts(chapter, GRAPE_ID, "</p>");
             for (String grape:grapes) {
                 if (!grape.contains(GRAPE_DISCUSSED_ID)) {
-                    String[] grapeSplitted = grape.split(", zie ");
-                    String grapeName = grapeSplitted[0];
-                    String[] grapesReferredTo = grapeSplitted[1].split(",\\s|\\sen\\s");
-                    // only refer to the first wine for now
                     Wine wineReferredTo;
-                    // some exceptions of mistakes in the book 
-                    if (grapeName == "calatayud" || grapesReferredTo[0] == "grenache noir") {
+                    grape = removeAllParts(grape, HTML[0], HTML[1]);
+                    String grapeName;
+                    if (grape.equals("calatayud")) {
                         wineReferredTo = wines.get("grenache");
+                        grapeName = grape;
                     } else {
-                        wineReferredTo = wines.get(grapesReferredTo[0]);
+                        String[] grapeSplitted = grape.split(", zie ");
+                        grapeName = grapeSplitted[0];
+                        if (grapeName.contains("mâcon")) {
+                            grapeName = "mâcon";
+                        }
+                        String[] grapesReferredTo = grapeSplitted[1].split(", | en ");
+                        // only refer to the first wine for now
+                        // some exceptions of mistakes in the book 
+                        if (grapesReferredTo[0].equals("grenache noir")) {
+                            wineReferredTo = wines.get("grenache");
+                        } else if (grapesReferredTo[0].equals("languedoc-roussillon rood")) {
+                            wineReferredTo = wines.get("languedoc-roussillon");
+                        } else {
+                            wineReferredTo = wines.get(removeAllParts(grapesReferredTo[0],"(",")").trim());
+                        }
                     }
                     Wine wine = new Wine(wineReferredTo.getColour(), grapeName);
                     wine.addReferral(wineReferredTo);
@@ -182,25 +198,29 @@ public class WineDineReader {
     private Wine makeWineObject(String par) {
         WineColour colour;
         String name;
-        List<String> white = obtainAllParts(par, WHITEWINEPARAGRAPH_ID, "</span>", HTML);
-        List<String> red = obtainAllParts(par, REDWINEPARAGRAPH_ID, "</span>", HTML);
-        List<String> rose = obtainAllParts(par, ROSEWINEPARAGRAPH_ID, "</span>", HTML);
-        if (!white.isEmpty()) {
+        List<String> red = obtainAllParts(par, REDWINEPARAGRAPH_ID, "</span>", HTML[0], HTML[1], "(", ")");
+        List<String> white = obtainAllParts(par, WHITEWINEPARAGRAPH_ID, "</span>", HTML[0], HTML[1], "(", ")");
+        List<String> rose = obtainAllParts(par, ROSEWINEPARAGRAPH_ID, "</span>", HTML[0], HTML[1], "(", ")");
+        if (!red.isEmpty()) {
+            colour = WineColour.Red;
+            name = red.get(0).trim();
+        } else if (!white.isEmpty()) {
             colour = WineColour.White;
-            name = white.get(0);
+            name = white.get(0).trim();
             // exception for the book name "sauternes en andere zoete wijnen van sauvignong blanc en/of sémillon"
             if (name.contains("sauternes")) name = "sauternes";
-        } else if (!red.isEmpty()) {
-            colour = WineColour.Red;
-            name = red.get(0);
-        } else {
+        } else if (!rose.isEmpty()) {
             colour = WineColour.Rose;
-            name = rose.get(0);
+            name = rose.get(0).trim();
+        } else {
+            List<String> undef = obtainAllParts(par, UNDEFINEDWINEPARAGRAPH_ID, "</span>", HTML);
+            colour = WineColour.undefined;
+            name = undef.get(0).trim();
         }
         Wine wine = new Wine(colour, name);;
         List<String> description = obtainAllParts(par, WINE_DESCRIPTION_ID, "</p>", HTML);
         if (!description.isEmpty()) {
-            wine.addDescription(description.get(0));
+            wine.addDescription(description.get(0).replace("hoe hij smaakt: ", ""));
         }
         List<Recipe> recipes = obtainAllRecipes(par);
         if (!recipes.isEmpty()){
@@ -258,8 +278,8 @@ public class WineDineReader {
                 part = str.substring(startInd);
                 startInd = -1;
             }
-            if (removeArgs.length > 0) {
-                part = removeAllParts(part, removeArgs[0], removeArgs[1]);
+            for (int i=0; i<removeArgs.length; i+=2) {
+                part = removeAllParts(part, removeArgs[i], removeArgs[i+1]);
             }
             parts.add(part);
         }
@@ -270,7 +290,7 @@ public class WineDineReader {
         StringBuilder remover = new StringBuilder(str);
         int startInd = remover.indexOf(startOfPart);
         while (startInd >= 0) {
-            int endInd = remover.indexOf(endOfPart)+endOfPart.length();
+            int endInd = remover.indexOf(endOfPart, startInd)+endOfPart.length();
             remover.delete(startInd, endInd);
             startInd = remover.indexOf(startOfPart);
         }

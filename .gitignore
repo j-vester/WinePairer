@@ -16,3 +16,7 @@ client/README.md
 
 # Ignore resource files
 winedine_contents
+
+# Ignore Regex tryout class
+RegexLearner.java
+RegexLearner.class
