@@ -9,6 +9,8 @@ De frontend is gebouwd met React. Om de React applicatie te kunnen runnen moeten
 
 De applicatie zelf en het domein zijn gebouwd met behulp van Gradle. Je kunt of Gradle installeren op je eigen machine en die installatie gebruiken om deze applicatie op te starten of de Gradle wrapper files gebruiken die in deze repository te vinden zijn. Als je Gradle zelf globaal hebt geinstalleerd vervang dan de `./gradlew` in de onderstaande commands met `gradle`. Of als je de Windows batch script runt vervang het dan door `.\gradlew.bat`.
 
+De database is gebouwd in MySQL. Om deze database lokaal te creëren moet eerst MySQL geïnstalleerd zijn, zie de website van [MySQL](https://dev.mysql.com/doc/mysql-installation-excerpt/8.0/en/general-installation-issues.html) voor de uitleg voor installatie op verschillende platforms. Run vervolgens in de command line `mysql -u root -p` en voer het ingestelde wachtwoord in om de mysql command line client op te starten. In de mysql command line client run je de command `source ./database/create_db.sql;` en vervolgens `quit` om de mysql command line client weer te sluiten.
+
 ## Instructies voor het runnen van de applicatie
 De frontend en de backend moeten apart worden opgestart, maar zijn allebei nodig om de applicatie te kunnen gebruiken. 
 ### Frontend
