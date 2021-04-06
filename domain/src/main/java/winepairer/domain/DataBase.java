@@ -2,8 +2,6 @@ package winepairer.domain;
 
 import java.sql.*;
 
-import com.mysql.cj.xdevapi.Result;
-
 public class DataBase {
     
     public static void main(String[] args) {
