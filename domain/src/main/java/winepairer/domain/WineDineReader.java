@@ -59,7 +59,7 @@ public class WineDineReader {
     private Map<String,Wine> wines = new HashMap<String,Wine>();
     private Map<String,Food> foods = new HashMap<String,Food>();
 
-    public WineDineReader() throws FileNotFoundException, IOException {
+    public WineDineReader() {
         EpubReader eReader = new EpubReader();
         try {
             File eBook = new File(EPUB_LOC);
@@ -76,16 +76,6 @@ public class WineDineReader {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }        
-    }
-
-    public static void main(String[] args) throws FileNotFoundException, IOException {
-        WineDineReader reader = new WineDineReader();
-        for (String wine:reader.getWines().keySet()) {
-            System.out.println(wine);
-        }
-        for (String food:reader.getFoods().keySet()) {
-            System.out.println(food);
-        }
     }
 
     public Map<String,Wine> getWines() {

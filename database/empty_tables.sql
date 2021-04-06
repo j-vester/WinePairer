@@ -1,20 +1,9 @@
-CREATE DATABASE IF NOT EXISTS wine_dine_pairing;
 USE wine_dine_pairing;
 
-CREATE TABLE IF NOT EXISTS wines (
-    wine_id INT AUTO_INCREMENT PRIMARY KEY,
-    colour VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(2000)
-);
-
-CREATE TABLE IF NOT EXISTS foods (
-    food_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    gamechanger BOOLEAN NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS pairings (
+DROP TABLE pairings;
+TRUNCATE TABLE wines;
+TRUNCATE TABLE foods;
+CREATE TABLE pairings (
     pairing_id INT AUTO_INCREMENT PRIMARY KEY,
     wine_id INT NOT NULL,
     CONSTRAINT fk_wine
