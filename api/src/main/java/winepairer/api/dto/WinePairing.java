@@ -1,14 +1,18 @@
 package winepairer.api.dto;
 
 public class WinePairing {
-    public WinePairing(winepairer.domain.WinePairer winepairer) {
-        wine = winepairer.getWine();
-        meal = winepairer.getMeal();
+    public WinePairing(winepairer.domain.WinePairer winepairer, String mealInput) {
+        foods = new Food[winepairer.getFoods().size()];
+        for (int i=0; i<foods.length; i++) {
+            winepairer.domain.Food food = winepairer.getFoods().get(i);
+            if (food.getName().equals(mealInput)) {
+                foods[i] = new Food(food, true);
+            } else {
+                foods[i] = new Food(food, false);
+            }
+        }
     }
 
-    String wine;
-    public String getWine() { return wine; }
-
-    String meal;
-    public String getMeal() { return meal; }
+    Food[] foods;
+    public Food[] getFoods() { return foods; }
 }

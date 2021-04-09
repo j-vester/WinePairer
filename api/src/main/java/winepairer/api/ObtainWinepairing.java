@@ -18,7 +18,7 @@ public class ObtainWinepairing {
         String meal = mealInput.getMealToPair();
         var winepairing = new WinePairer(meal);
 
-        var output = new WinePairing(winepairing);
+        var output = new WinePairing(winepairing, meal);
         return Response.status(200).entity(output).build();
     }
 }

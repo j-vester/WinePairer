@@ -16,13 +16,6 @@ public class ObtainWinepairingTest {
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void requestingWinepairingReturnsChardonnay() {
-        var response = obtainWinepairing("Zalm");
-        var entity = (WinePairing) response.getEntity();
-        assertEquals("Chardonnay", entity.getWine());
-    }
-
     private Response obtainWinepairing(String meal) {
         var servlet = new ObtainWinepairing();
         var request = createRequestContext();

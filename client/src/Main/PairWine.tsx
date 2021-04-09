@@ -18,10 +18,6 @@ export function PairWine({ setWinePairing }: PairWineProps) {
             setErrorMessage("Er moet eerst een hoofdingredient ingevuld worden!")
             return;
         }
-        if (meal!="Zalm") {
-            setErrorMessage("Helaas, voor dit ingrediënt hebben we geen passende wijn gevonden")
-            return;
-        }
         setErrorMessage("");
 
         try {
