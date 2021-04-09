@@ -9,7 +9,7 @@ interface Food {
     pairings: Pairing[];
 }
 
-interface Pairing {
+export interface Pairing {
     wineName: string;
     description: string;
 }

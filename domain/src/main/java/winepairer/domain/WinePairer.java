@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 public class WinePairer {
-    private final int MAX_LEVENSHTEIN = 3;
+    private final int MAX_LEVENSHTEIN = 2;
     private List<Food> foods = new ArrayList<>();
 
     public WinePairer(String mealInput) {
@@ -58,7 +58,7 @@ public class WinePairer {
                 "jdbc:mysql://localhost/wine_dine_pairing", 
                 "root", 
                 "winepairer1");
-            String getSubFoods = "SELECT DISTICT food_specs FROM parings "+
+            String getSubFoods = "SELECT DISTINCT food_specs FROM pairings "+
                 "WHERE pairings.food_id = "+ foodId;
             String getPairings = "SELECT * FROM pairings "+
                 "WHERE pairings.food_specs = ?";

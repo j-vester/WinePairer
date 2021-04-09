@@ -5,7 +5,7 @@ public class WinePairing {
         foods = new Food[winepairer.getFoods().size()];
         for (int i=0; i<foods.length; i++) {
             winepairer.domain.Food food = winepairer.getFoods().get(i);
-            if (food.getName().equals(mealInput)) {
+            if (food.getName().equals(mealInput.toLowerCase())) {
                 foods[i] = new Food(food, true);
             } else {
                 foods[i] = new Food(food, false);

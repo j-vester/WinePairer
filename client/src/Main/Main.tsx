@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PairWine } from "./PairWine"
+import { Results } from "./Results";
 import type { WinePairing } from "../winePairing"
 import './Main.css';
 
@@ -11,5 +12,5 @@ export function Main() {
         return <PairWine setWinePairing={setWinePairing} />
     }
 
-    return (<div>Gelukt!</div>)
+    return <Results result={winePairing} setWinePairing={setWinePairing} />
 }
