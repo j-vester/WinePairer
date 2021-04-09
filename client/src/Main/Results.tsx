@@ -1,34 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import type { WinePairing, Pairing } from "../winePairing";
 
 type ResultProps = {
     result: WinePairing;
     setWinePairing(newWinePairing: WinePairing | undefined): void;
+    setPairing(newPairing: Pairing[]): void;
 }
 
-export function Results({result, setWinePairing}: ResultProps) {
-
-    function printPairings(pairings: Pairing[], e:React.MouseEvent) {
-        return (
-            <ul>
-                {pairings.map((value, index) => {
-                    return <li key={index}>{value.wineName}</li>
-                })}
-            </ul>
-        )
-    }
-
-    function emptyWinePairing(e:React.MouseEvent) {
-        setWinePairing(undefined);            
-    }
+export function Results({result, setWinePairing, setPairing}: ResultProps) {
 
     return (
         <div>
             <p>Welke optie komt het meest overeen?</p>
-            {result.foods.map(function(food){
-                return <button onClick={(e)=>printPairings(food.pairings, e)}>{food.name}</button>
-            })}
-            <p>Of staat je optie er niet tussen? <button onClick={(e)=>emptyWinePairing(e)}>Probeer opnieuw</button></p>
+            <ul>
+                {result.foods.map((food, index) => {
+                    return <li key={index}><button onClick={(e)=>setPairing(food.pairings)}>{food.name}</button></li>
+                })}
+            </ul>
+            <p>Of staat je optie er niet tussen? <button onClick={(e)=>setWinePairing(undefined)}>Probeer opnieuw</button></p>
         </div>
     )
 }
