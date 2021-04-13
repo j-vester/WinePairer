@@ -17,9 +17,9 @@ public class WinePairerTest{
     }
 
     @Test
-    public void upperCaseAndLowerCaseGiveSameResult() {
+    public void upperCaseAndLowerCaseGiveSameAmountOfResults() {
         WinePairer wpTest1 = new WinePairer("zalm");
         WinePairer wpTest2 = new WinePairer("ZaLm");
-        assertEquals(wpTest1.getFoods(), wpTest2.getFoods());
+        assertEquals(wpTest1.getFoods().size(), wpTest2.getFoods().size());
     }
 }

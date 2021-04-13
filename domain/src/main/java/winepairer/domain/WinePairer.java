@@ -13,43 +13,45 @@ public class WinePairer {
 
     private void obtainFoods(String mealInput) {
         mealInput = mealInput.toLowerCase();
-        String mealInQuotes = "\""+mealInput+"\"";
-        try {
-            Class.forName( "com.mysql.cj.jdbc.Driver" );
-            Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost/wine_dine_pairing", 
-                "root", 
-                "winepairer1");
-            Statement stmt = conn.createStatement();
-            String getMealId = "SELECT food_id, gamechanger "+
-                "FROM foods WHERE foods.name = "+ mealInQuotes;
-            ResultSet rs_exactFood = stmt.executeQuery(getMealId);
-            while (rs_exactFood.next()) {
-                int foodId = rs_exactFood.getInt("food_id");
-                boolean gamechanger = rs_exactFood.getBoolean("gamechanger");
-                Food food = new Food(mealInput, gamechanger);
-                obtainPairings(food, foodId);
-            }
-            if (this.foods.isEmpty()) {
-                LevenshteinDistance lDist = new LevenshteinDistance(MAX_LEVENSHTEIN);
-                String getAllFoods = "SELECT * FROM foods";
-                ResultSet rs_allFoods = stmt.executeQuery(getAllFoods);
-                while (rs_allFoods.next()) {
-                    String compareTo = rs_allFoods.getString("name");
-                    if ((lDist.apply(mealInput, compareTo) != -1) ||
-                            compareTo.contains(mealInput) ){
-                        int foodId = rs_allFoods.getInt("food_id");
-                        boolean gamechanger = rs_allFoods.getBoolean("gamechanger");
-                        Food food = new Food(compareTo, gamechanger);
-                        obtainPairings(food, foodId);
+        if (mealInput.length() > 0) {
+            String mealInQuotes = "\""+mealInput+"\"";
+            try {
+                Class.forName( "com.mysql.cj.jdbc.Driver" );
+                Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/wine_dine_pairing", 
+                    "root", 
+                    "winepairer1");
+                Statement stmt = conn.createStatement();
+                String getMealId = "SELECT food_id, gamechanger "+
+                    "FROM foods WHERE foods.name = "+ mealInQuotes;
+                ResultSet rs_exactFood = stmt.executeQuery(getMealId);
+                while (rs_exactFood.next()) {
+                    int foodId = rs_exactFood.getInt("food_id");
+                    boolean gamechanger = rs_exactFood.getBoolean("gamechanger");
+                    Food food = new Food(mealInput, gamechanger);
+                    obtainPairings(food, foodId);
+                }
+                if (this.foods.isEmpty()) {
+                    LevenshteinDistance lDist = new LevenshteinDistance(MAX_LEVENSHTEIN);
+                    String getAllFoods = "SELECT * FROM foods";
+                    ResultSet rs_allFoods = stmt.executeQuery(getAllFoods);
+                    while (rs_allFoods.next()) {
+                        String compareTo = rs_allFoods.getString("name");
+                        if ((lDist.apply(mealInput, compareTo) != -1) ||
+                                compareTo.contains(mealInput) ){
+                            int foodId = rs_allFoods.getInt("food_id");
+                            boolean gamechanger = rs_allFoods.getBoolean("gamechanger");
+                            Food food = new Food(compareTo, gamechanger);
+                            obtainPairings(food, foodId);
+                        }
                     }
                 }
+                conn.close();
+            } catch (SQLException e) {
+                System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
             }
-            conn.close();
-        } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
         }
     }
 
