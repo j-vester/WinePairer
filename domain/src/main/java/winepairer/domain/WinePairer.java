@@ -12,7 +12,8 @@ public class WinePairer {
     }
 
     private void obtainFoods(String mealInput) {
-        String mealInQuotes = "\""+mealInput.toLowerCase()+"\"";
+        mealInput = mealInput.toLowerCase();
+        String mealInQuotes = "\""+mealInput+"\"";
         try {
             Class.forName( "com.mysql.cj.jdbc.Driver" );
             Connection conn = DriverManager.getConnection(
@@ -35,7 +36,8 @@ public class WinePairer {
                 ResultSet rs_allFoods = stmt.executeQuery(getAllFoods);
                 while (rs_allFoods.next()) {
                     String compareTo = rs_allFoods.getString("name");
-                    if (lDist.apply(mealInput, compareTo) != -1) {
+                    if ((lDist.apply(mealInput, compareTo) != -1) ||
+                            compareTo.contains(mealInput) ){
                         int foodId = rs_allFoods.getInt("food_id");
                         boolean gamechanger = rs_allFoods.getBoolean("gamechanger");
                         Food food = new Food(compareTo, gamechanger);
